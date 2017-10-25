@@ -6,10 +6,20 @@ else
 	pkg_dir=$BOSH_PACKAGES_DIR/golang-1.8-linux
 fi
 
-source ${pkg_dir}/bosh/compile.env
+source ${pkg_dir}/bosh/compile.env.generic
 
 mkdir ../src && cp -a * ../src/ && mv ../src ./src
 
-mkdir $BOSH_INSTALL_TARGET/bin
+mkdir -p $BOSH_INSTALL_TARGET/bin
 
-go build -o $BOSH_INSTALL_TARGET/bin/cpi src/github.com/cppforlife/bosh-warden-cpi/main/*.go
+export GOARCH=amd64
+export GOOS=darwin
+export GOTOOLDIR=$GOROOT/pkg/darwin_amd64
+
+go build -o $BOSH_INSTALL_TARGET/bin/cpi-darwin src/github.com/cppforlife/bosh-warden-cpi/main/*.go
+
+export GOARCH=amd64
+export GOOS=linux
+export GOTOOLDIR=$GOROOT/pkg/linux_amd64
+
+go build -o $BOSH_INSTALL_TARGET/bin/cpi-linux src/github.com/cppforlife/bosh-warden-cpi/main/*.go
